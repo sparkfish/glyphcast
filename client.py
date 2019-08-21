@@ -1,8 +1,6 @@
 import base64
 import requests
 
-import json
-
 from io import BytesIO
 
 with open("sparkfish.svg") as f:
