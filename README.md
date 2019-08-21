@@ -5,14 +5,14 @@ This is a small service that compiles SVG payloads into a base64-encoded string.
 **HTTPie**
 
 ``` shell
-http https://svgtopdfservice.azurewebsites.net/ < example.json
+http https://svgtopdfservice.azurewebsites.net/ < sparkfish.json
 ```
 
 
 **cURL**
 
 ``` shell
-curl -vX GET https://svgtopdfservice.azurewebsites.net/ -d @example.json --header "Content-Type: application/json"
+curl -vX GET https://svgtopdfservice.azurewebsites.net/ -d @sparkfish.json --header "Content-Type: application/json"
 ```
 
 
