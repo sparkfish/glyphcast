@@ -16,4 +16,5 @@ steps:
     repository: 'svg-to-pdf-service'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+    tags: 'latest'
   displayName: 'Run a multi-line script'
