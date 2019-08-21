@@ -3,10 +3,11 @@ import requests
 
 import json
 
-with open("sparkfish.json") as f:
-    svg = json.load(f)
+with open("sparkfish.svg") as f:
+    svg = f.read()
 
-r = requests.get("https://svgtopdfservice.azurewebsites.net/", json=svg)
+print(svg)
+r = requests.get("http://localhost:5000/", data=svg)
 
 json = r.json()
 pdf_svg = json.get('pdf')

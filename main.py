@@ -17,7 +17,7 @@ def svg_to_pdf(svg_text):
 @app.route("/", methods=['GET'])
 def convert_svg():
     try:
-        svg_data = request.json.get('svg')
+        svg_data = request.get_data(as_text=True)
         response = {
             "pdf": svg_to_pdf(svg_data)
         }
