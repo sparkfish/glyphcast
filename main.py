@@ -21,7 +21,6 @@ def convert_svg():
         svg_pdf = svg_to_pdf(svg_data)
         response = send_file(svg_pdf, attachment_filename='svg.pdf', mimetype='application/pdf')
         status = 200
-        
     except:
         response = "invalid data"
         status = 400
