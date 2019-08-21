@@ -24,7 +24,7 @@ test_svg = """
     <text x="100" y="350" dx="-30">A</text>
     <text x="250" y="50" dy="-10">B</text>
     <text x="400" y="350" dx="30">C</text>
-  </g>
+  </g> 
   Sorry, your browser does not support inline SVG.
 </svg>
 """
