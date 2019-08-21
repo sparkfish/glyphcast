@@ -24,7 +24,7 @@ Run with gunicorn `gunicorn --workers=4 main:app`
 
 # Deployment
 
-On push to master, a Docker image is built and pushed to a container registry via Azure DevOps to a continuously deployed cLinux Container App at https://svgtopdfservice.azurewebsites.net/.
+On push to master, a Docker image is built and pushed to a container registry via Azure DevOps to a continuously deployed Linux Container App at https://svgtopdfservice.azurewebsites.net/.
 
 # Roadmap
 
