@@ -11,7 +11,7 @@ with open("sparkfish.svg") as f:
 r = requests.get("http://localhost:5000", data=svg)
 
 pdf_svg = r.content
-print(pdf_svg)
+
 if pdf_svg:
     with open("sparkfish.pdf", "wb") as f:
         f.write(pdf_svg)
