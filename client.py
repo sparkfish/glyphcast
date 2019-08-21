@@ -1,7 +1,7 @@
 import base64
 import requests
 
-svg = test_svg = """
+svg = """
 <svg height="400" width="450">
 <path id="lineAB" d="M 100 350 l 150 -300" stroke="red" stroke-width="3" fill="none" />
   <path id="lineBC" d="M 250 50 l 150 300" stroke="red" stroke-width="3" fill="none" />
@@ -33,6 +33,3 @@ if pdf_svg:
     decoded = base64.b64decode(pdf_svg)
     with open("test.pdf", "wb") as f:
         f.write(decoded)
-
-
-print(r, r.status_code)
