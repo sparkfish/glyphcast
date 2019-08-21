@@ -24,7 +24,7 @@ svg = test_svg = """
 """
 
 
-r = requests.get("http://localhost:8000/", json={"svg": svg})
+r = requests.get("https://svgtopdfservice.azurewebsites.net/", json={"svg": svg})
 json = r.json()
 
 pdf_svg = json.get('pdf')
