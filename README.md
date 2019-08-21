@@ -1,4 +1,4 @@
-# SVG to PNG Service
+# SVG to PDF Service
 
 This is a small service that converts SVG payloads into PDF bytes. The server response to a valid payload is the raw binary PDF. If you save the response to a file, it should load in a PDF viewer with no additional processing. Clients can determine success or failure by the HTTP status code returned.
 
