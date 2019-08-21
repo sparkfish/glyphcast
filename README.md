@@ -1,6 +1,20 @@
 # SVG to PNG Service
 
-This is a small service that compiles SVG payloads into a base64-encoded string. See [client.py](https://github.com/team-sparkfish/svg-to-pdf-service/blob/master/client.py) for an example request.
+This is a small service that compiles SVG payloads into a base64-encoded string. See [client.py](https://github.com/team-sparkfish/svg-to-pdf-service/blob/master/client.py) for example client usage, or use the example JSON payload:
+
+**HTTPie**
+
+``` shell
+http https://svgtopdfservice.azurewebsites.net/ < example.json
+```
+
+
+**cURL**
+
+``` shell
+curl -vX GET https://svgtopdfservice.azurewebsites.net/ -d @example.json --header "Content-Type: application/json"
+```
+
 
 # Development
 
