@@ -2,7 +2,7 @@
 
 This is a small service that converts SVG payloads into PDF bytes. The server response to a valid payload is the raw binary PDF. If you save the response to a file, it should load in a PDF viewer with no additional processing. Clients can determine success or failure by the HTTP status code returned.
 
-See [client.py](https://github.com/team-sparkfish/svg-to-pdf-service/blob/master/client.py) for example client usage, or use the example JSON payload:
+See [client.py](https://github.com/team-sparkfish/svg-to-pdf-service/blob/master/client.py) for example client usage, or use the example SVG payload:
 
 **HTTPie**
 
