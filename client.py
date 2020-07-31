@@ -3,17 +3,37 @@ import requests
 
 from io import BytesIO
 
-with open("sparkfish.svg") as f:
-    svg = f.read()
+def make_request(source_file="sparkfish.svg", from_="svg", to="pdf", to_file="document.pdf"):
 
-r = requests.get("http://localhost:5000", data=svg)
+    print(f"Converting {source_file} from {from_} to {to}")
 
-pdf_svg = r.content
+    with open(source_file, "rb") as f:
+        data = f.read()
 
-if pdf_svg:
-    with open("sparkfish.pdf", "wb") as f:
-        f.write(pdf_svg)
-else:
-    print("Request invalid")
-    
-f.close()
+    # TODO: Make the URI configurable
+    r = requests.put(f"http://localhost:5000?to={to}&from={from_}", data=data)
+    print(r.request.headers)
+    print(r.headers)
+
+    maybe_converted = r.content
+
+    if maybe_converted and r.status_code < 400:
+        with open(to_file, "wb") as f:
+            f.write(maybe_converted)
+            print(f"Converting {source_file} from {from_} to {to} succeeded: file written to {to_file}")
+    else:
+        print(f"Converting {source_file} from {from_} to {to} failed with status code {r.status_code} and message: '{r.text}'")
+
+if __name__ == '__main__':
+    import timeit
+    import statistics
+    timer = timeit.Timer(
+        'make_request("testfile.docx", from_="docx", to="pdf", to_file="testfile.pdf")',
+        globals={"make_request": make_request})
+    timed = timer.repeat(repeat=10, number=1)
+    message = f"""
+average: {statistics.mean(timed)}
+shortest: {min(timed)}
+longest: {max(timed)}
+"""
+    print(message)
