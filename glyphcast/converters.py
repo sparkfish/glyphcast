@@ -52,11 +52,13 @@ class Converter:
     @staticmethod
     def svg_to_pdf(svg_text):
         pdf_buffer = BytesIO()
+        buffer_size = 0
         decoded = svg_text.decode("latin1")
         svg2pdf(bytestring=decoded, write_to=pdf_buffer)
+        buffer_size += pdf_buffer.tell()
         # Reset the pdf_buffer stream position to 0
         pdf_buffer.seek(0)
-        return pdf_buffer
+        return pdf_buffer, buffer_size
 
 
     @staticmethod
@@ -64,6 +66,7 @@ class Converter:
         """ Convert files in docx format to PDF using LibreOffice lowriter
         """
         pdf_buffer = BytesIO()
+        buffer_size = 0
         # Create a temporary directory that is unlinked as soon as we exit the
         # tempdir context
         with TemporaryDirectory() as tempdir:
@@ -72,18 +75,19 @@ class Converter:
             with open(docx_path, "wb") as source_file:
                 source_file.write(docx)
             run_lowriter = ["lowriter", "--invisible", "--convert-to", "pdf", f"{docx_path}", "--outdir", tempdir]
+            #run_unoconv = ["/usr/bin/python3", "/usr/bin/unoconv", "-f", "pdf", f"{docx_path}"]
             # Run LibreOffice lowriter against the tempdir input file
             execute(run_lowriter, raise_error=True)
             pdf_path = join(tempdir, "document.pdf")
             with open(pdf_path, "rb") as outfile:
                 # Write the file output by lowriter to pdf_buffer
-                pdf_buffer.write(outfile.read())
+                buffer_size += pdf_buffer.write(outfile.read())
 
         # Reset the pdf_buffer stream position to 0 otherwise there might be unexpected behavior in callers --
         # for example, Flask.send_file will only send data after the current stream position, so calling Flask.send_file
         # immediately on the return value of this method will send an empty byte stream
         pdf_buffer.seek(0)
-        return pdf_buffer
+        return pdf_buffer, buffer_size
 
     @staticmethod
     def conversion_type(from_: str, to: str) -> (Format, Format):

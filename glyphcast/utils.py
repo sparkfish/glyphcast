@@ -23,3 +23,13 @@ def execute(cmd: List, raise_error=True) -> int:
         logging.error(f"Command {cmd} failed with return code {return_code}")
         raise subprocess.CalledProcessError(return_code, cmd)
     return return_code
+
+def human_size(bytes_):
+    if bytes_ < 1000 * 1000:
+        conversion_factor = 1/1000
+        units = "kb"
+    else:
+        conversion_factor = 1/(1000*1000)
+        units = "mb"
+    converted = bytes_ * conversion_factor
+    return f"{converted:.1f} {units}"
