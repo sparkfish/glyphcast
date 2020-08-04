@@ -18,17 +18,14 @@ RUN apk add --update \
 RUN python3 -m ensurepip
 RUN git clone https://github.com/unoconv/unoconv
 
-WORKDIR /code
-
 COPY requirements.txt /code
 ENV LIBRARY_PATH=/lib:/usr/lib
 RUN apk add openssl
- 
+
 RUN pip install wheel
 RUN pip install -r /code/requirements.txt
 
 COPY . /code/
-
 WORKDIR /code/
 
 EXPOSE 5000 5000
