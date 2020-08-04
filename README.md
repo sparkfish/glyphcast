@@ -1,4 +1,6 @@
-# Glyphcast
+<p align="center"><img width="640" src="logo.jpg" alt="Glyphcast logo"></p>
+
+https://github.com/sparkfish/svg-to-pdf-service/blob/dev/logo.jpg
 
 ![](glyphcast.jpg?raw=true)
 
