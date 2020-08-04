@@ -18,7 +18,7 @@ http -d GET http://localhost:5000/convert?from=svg&to=pdf @sparkfish.svg --outpu
 curl -vX GET http://localhost:5000/convert?from=svg&to=pdf -d @sparkfish.svg --header "Content-Type: application/text" > sparkfish.pdf
 ```
 
-# Development
+## Development
 
 Copy `example.env` to `.env` and ensure that the environment variables are properly set (the parameters are thoroughly documented in the `.env` file comments).
 
@@ -28,16 +28,16 @@ In production you'll want to use a production grade server such as [gunicorn](ht
 
 `gunicorn --workers=4 main:app`
 
-# Docker image
+## Docker image
 
 To build the Dockerfile, do `docker build . -t glyphcast`, and then `docker run -p 5000:5000`. This will start a container with the app running behind a gunicorn server listening on port 5000.
 
-# Caveats and Roadmap
+## Caveats and Roadmap
 
-## tmpfs storage
+### tmpfs storage
 
 Presently Glyphcast uses `/dev/shm` to store intermediate files during document conversion in volatile memory (in `/dev/shm/glyphcast`). Intermediate files are unlinked immediately after conversion. Note that different Linux distributions have different default size limits on `/dev/shm`, but it tends to be about half the memory on the system. Check the amount available on your distribution of choice with `df -h /dev/shm`. Resizing can be done with e.g. `mount -o remount,size=16G /dev/shm` (the previous command remounts `/dev/shm` with 16GB). Further there are no guarantees that data written to `/dev/shm` will not be written to disk in a system under heavy load. Future versions of Glyphcast will create and mount a dedicated `tmpfs` filesystem with configurable sizing.
 
-## Scalability
+### Scalability
 
 At the moment, Glyphcast handles requests sequentially, meaning it is unsuitable for heavy load. We intend to support a pub/sub architecture in the future for better scalability.
