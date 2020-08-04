@@ -1,3 +1,8 @@
+"""
+The glyphcast.utils module consists of miscelleneous helper methods for spawning subprocesses and
+creating human-readable file size strings for logging messages
+"""
+
 import logging
 import subprocess
 

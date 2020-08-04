@@ -11,7 +11,7 @@ def make_request(source_file="sparkfish.svg", from_="svg", to="pdf", to_file="do
         data = f.read()
 
     # TODO: Make the URI configurable
-    r = requests.put(f"http://localhost:5000?to={to}&from={from_}", data=data)
+    r = requests.put(f"http://localhost:8000?to={to}&from={from_}", data=data)
     print(r.request.headers)
     print(r.headers)
 
@@ -24,11 +24,12 @@ def make_request(source_file="sparkfish.svg", from_="svg", to="pdf", to_file="do
     else:
         print(f"Converting {source_file} from {from_} to {to} failed with status code {r.status_code} and message: '{r.text}'")
 
+
 if __name__ == '__main__':
     import timeit
     import statistics
     timer = timeit.Timer(
-        'make_request("testfile.docx", from_="docx", to="pdf", to_file="testfile.pdf")',
+        'make_request("sparkfish.svg", from_="svg", to="pdf", to_file="testfile-svg.pdf")',
         globals={"make_request": make_request})
     timed = timer.repeat(repeat=10, number=1)
     message = f"""
@@ -37,3 +38,8 @@ shortest: {min(timed)}
 longest: {max(timed)}
 """
     print(message)
+
+    #from glyphcast.converters import Converter
+
+    #x = Converter()
+    

@@ -1,7 +1,16 @@
+"""
+The glyphcast.converters module consisets of the Converter class. Converter objects manage the
+lifecycle of a file conversion, from detecting the conversion format, to handling unsupported
+conversions, to performing the conversion
+"""
+
+
 from io import BytesIO
 from os.path import join
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from glyphcast.constants import UNOCONV_PATH, UNOCONV_PYTHON_PATH
 from glyphcast.formats import Format
 from glyphcast.utils import execute
 
@@ -67,17 +76,19 @@ class Converter:
         """
         pdf_buffer = BytesIO()
         buffer_size = 0
+        # Create a directory in /dev/shm to house temporary directories
+        tempfs = Path("/dev/shm") / Path("glyphcast")
+        tempfs.mkdir(exist_ok=True)
         # Create a temporary directory that is unlinked as soon as we exit the
         # tempdir context
-        with TemporaryDirectory() as tempdir:
+        with TemporaryDirectory(dir=tempfs) as tempdir:
             docx_path = join(tempdir, "document.docx")
             # Write the input data to a file in the temp directory
             with open(docx_path, "wb") as source_file:
                 source_file.write(docx)
-            run_lowriter = ["lowriter", "--invisible", "--convert-to", "pdf", f"{docx_path}", "--outdir", tempdir]
-            #run_unoconv = ["/usr/bin/python3", "/usr/bin/unoconv", "-f", "pdf", f"{docx_path}"]
-            # Run LibreOffice lowriter against the tempdir input file
-            execute(run_lowriter, raise_error=True)
+            run_unoconv = [UNOCONV_PYTHON_PATH, UNOCONV_PATH, "-f", "pdf", f"{docx_path}"]
+            # Run unoconv against the tempdir input file
+            execute(run_unoconv, raise_error=True)
             pdf_path = join(tempdir, "document.pdf")
             with open(pdf_path, "rb") as outfile:
                 # Write the file output by lowriter to pdf_buffer

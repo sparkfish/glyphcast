@@ -1,6 +1,8 @@
 import logging
 import os
 
+from glyphcast.constants import SERVER_NAME, SERVER_PORT
+from glyphcast.constants import MAX_CONTENT_LENGTH, UPLOAD_RATE_LIMIT
 from glyphcast.converters import Converter, UnsupportedConversionException
 from glyphcast.formats import Format
 from glyphcast.utils import human_size
@@ -12,16 +14,6 @@ from flask_limiter.util import get_remote_address
 logging.basicConfig(format='%(asctime)s %(levelname)s %(name)s %(message)s', level=logging.DEBUG)
 
 app = Flask(__name__)
-
-MAX_CONTENT_LENGTH = os.environ.get('MAX_CONTENT_LENGTH', None)
-UPLOAD_RATE_LIMIT = os.environ.get('UPLOAD_RATE_LIMIT', "25 per minute")
-
-if not MAX_CONTENT_LENGTH:
-    logging.warn("MAX_CONTENT_LENGTH is unset, so there will be no limits on file upload size")
-else:
-    MAX_CONTENT_LENGTH = int(MAX_CONTENT_LENGTH)
-
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 limiter = Limiter(
     app,
@@ -36,6 +28,8 @@ def convert():
     if request.content_length > MAX_CONTENT_LENGTH:
         status = 413
         response = "Request too large"
+        logging.warning(f"Received a request that exceeded the maximum content length by {request.content_length - MAX_CONTENT_LENGTH}")
+        logging.warn(f"Responding with {status}: {response}")
         return response, status
     # Determine source/to conversion formats, possibly from filename extension or querystring
     # Attempt to perform the conversion
@@ -50,15 +44,9 @@ def convert():
     try:
         converted, converted_size = converter.convert(file_data)
         converted_size = human_size(converted_size)
-        # TODO: Log the size of the converted file in bytes. This is returned
-        #       when writing to the BytesIO buffer in the underlying conversion
-        #       method. We might return this in future payloads that include file
-        #       metadata
         logging.info(f"Converted {from_} to {to} ({converted_size=})")
-        # Only PDF responses are supported currently
-        # When more responses are supported the converter
-        # object can be augmented to determine the correct mimetype to return
-        # Flask.send_file can guess mimetype based on the filename
+        # Only PDF responses are supported currently. When more responses are supported
+        # the converter class can be augmented to determine the correct mimetype to return
         response = send_file(
           converted,
           attachment_filename='document.pdf',
@@ -80,4 +68,8 @@ def convert():
 
 
 if __name__ == '__main__':
-    app.run(load_dotenv=True)
+    app.run(
+        host=SERVER_NAME,
+        port=SERVER_PORT,
+        load_dotenv=True
+    )
