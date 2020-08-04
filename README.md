@@ -1,9 +1,5 @@
 <p align="center"><img width="640" src="logo.jpg" alt="Glyphcast logo"></p>
 
-https://github.com/sparkfish/svg-to-pdf-service/blob/dev/logo.jpg
-
-![](glyphcast.jpg?raw=true)
-
 Glyphcast is an HTTP API that transforms your DOCX and SVG files into beautiful PDFs. Harnessing the power of [CairoSVG](https://cairosvg.org/) and [unoconv](https://github.com/unoconv/unoconv),  Glyphcast is optimized for blazing-fast in-memory conversion of small files (think <100mb).
 
 See [client.py](https://github.com/team-sparkfish/svg-to-pdf-service/blob/dev/client.py) for example client usage, or see the examples using [HTTPie](https://httpie.org/) and [cURL](https://curl.haxx.se/) below.
