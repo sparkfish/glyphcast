@@ -29,12 +29,6 @@ RUN pip install -r /code/requirements.txt
 
 COPY . /code/
 
-ENV UNOCONV_PATH unoconv/unoconv
-ENV FLASK_APP main.py
-ENV FLASK_ENV production
-ENV FLASK_RUN_HOST 0.0.0.0
-ENV MAX_CONTENT_LENGTH 31457280
-ENV UPLOAD_RATE_LIMIT 15 per minute
 WORKDIR /code/
 
 EXPOSE 5000 5000
