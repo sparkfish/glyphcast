@@ -9,5 +9,6 @@ class Format(Enum):
     PDF = 0
     SVG = 1
     DOCX = 2
-    UNKNOWN = 3
+    HTML = 3
+    UNKNOWN = 4
 

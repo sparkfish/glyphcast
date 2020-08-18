@@ -60,7 +60,7 @@ def convert():
         response = e.args[0]
         logging.warn(f"{response}")
     except Exception as unhandled:
-        status = 500
+        status = 500 
         response = f"Something went wrong on our end"
         logging.error(f"Encountered an unhandled exception: {unhandled}")
     logging.info(f"Responding with status code {status}: {response}")

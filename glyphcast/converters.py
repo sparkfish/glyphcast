@@ -2,6 +2,9 @@
 The glyphcast.converters module consisets of the Converter class. Converter objects manage the
 lifecycle of a file conversion, from detecting the conversion format, to handling unsupported
 conversions, to performing the conversion
+
+TODO: Refactor methods that call an external subprocess so that they take the subprocess command
+      as an argument.
 """
 
 
@@ -11,6 +14,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from glyphcast.constants import UNOCONV_PATH, UNOCONV_PYTHON_PATH
+from glyphcast.constants import WEASYPRINT_PATH
 from glyphcast.formats import Format
 from glyphcast.utils import execute
 
@@ -37,8 +41,10 @@ class Converter:
         conversion = (self.source_format, self.to_format)
         return {
             (Format.SVG, Format.PDF): self.svg_to_pdf,
-            (Format.DOCX, Format.PDF): self.docx_to_pdf
+            (Format.DOCX, Format.PDF): self.document_to_pdf,
+            (Format.HTML, Format.PDF): self.document_to_pdf
         }.get(conversion)
+
 
     def converted_mimetype(self):
         {
@@ -70,11 +76,10 @@ class Converter:
         return pdf_buffer, buffer_size
 
 
-    @staticmethod
-    def docx_to_pdf(docx):
-        """ Convert files in docx format to PDF using LibreOffice lowriter
+    def document_to_pdf(self, document):
+        """ Convert an HTML file to PDF using WeasyPrint or a DOCX file to PDF using LibreOffice
         """
-        pdf_buffer = BytesIO()
+        document_buffer = BytesIO()
         buffer_size = 0
         # Create a directory in /dev/shm to house temporary directories
         tempfs = Path("/dev/shm") / Path("glyphcast")
@@ -82,23 +87,31 @@ class Converter:
         # Create a temporary directory that is unlinked as soon as we exit the
         # tempdir context
         with TemporaryDirectory(dir=tempfs) as tempdir:
-            docx_path = join(tempdir, "document.docx")
+            document_path = join(tempdir, "document.html")
             # Write the input data to a file in the temp directory
-            with open(docx_path, "wb") as source_file:
-                source_file.write(docx)
-            run_unoconv = [UNOCONV_PYTHON_PATH, UNOCONV_PATH, "-f", "pdf", f"{docx_path}"]
-            # Run unoconv against the tempdir input file
-            execute(run_unoconv, raise_error=True)
+            with open(document_path, "wb") as source_file:
+                source_file.write(document)
+
             pdf_path = join(tempdir, "document.pdf")
+
+            if self.source_format == Format.HTML:
+                cmd = [WEASYPRINT_PATH, f"{document_path}", f"{pdf_path}"]
+
+            else:
+                cmd = [UNOCONV_PYTHON_PATH, UNOCONV_PATH, "-f", "pdf", f"{document_path}"]
+
+            # Run unoconv against the tempdir input file
+            execute(cmd, raise_error=True)
             with open(pdf_path, "rb") as outfile:
                 # Write the file output by lowriter to pdf_buffer
-                buffer_size += pdf_buffer.write(outfile.read())
+                buffer_size += document_buffer.write(outfile.read())
 
-        # Reset the pdf_buffer stream position to 0 otherwise there might be unexpected behavior in callers --
+        # Reset the buffer stream position to 0 otherwise there might be unexpected behavior in callers --
         # for example, Flask.send_file will only send data after the current stream position, so calling Flask.send_file
         # immediately on the return value of this method will send an empty byte stream
-        pdf_buffer.seek(0)
-        return pdf_buffer, buffer_size
+        document_buffer.seek(0)
+        return document_buffer, buffer_size
+
 
     @staticmethod
     def conversion_type(from_: str, to: str) -> (Format, Format):
@@ -114,8 +127,6 @@ class Converter:
             return (Format.UNKNOWN, Format.UNKNOWN)
 
         return (Format[from_upper], Format[to_upper])
-
-
 
 
 class UnsupportedConversionException(Exception):
