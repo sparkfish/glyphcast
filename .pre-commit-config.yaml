@@ -1,0 +1,50 @@
+ci:
+  autofix_commit_msg: '[pre-commit.ci] auto fixes'
+  autofix_prs: true
+  autoupdate_schedule: weekly
+  autoupdate_commit_msg: 'chore(deps): pre-commit autoupdate'
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-json
+  - id: check-toml
+  - id: check-yaml
+  - id: end-of-file-fixer
+    exclude: \.changes/.*\.md
+  - id: trailing-whitespace
+
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.22.0
+  hooks:
+  - id: check-dependabot
+  - id: check-github-workflows
+  - id: check-readthedocs
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.261
+  hooks:
+  - id: ruff
+    args: [--fix, --exit-non-zero-on-fix]
+
+- repo: https://github.com/psf/black
+  rev: 23.3.0
+  hooks:
+  - id: black
+    language_version: python3.10
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.1.1
+  hooks:
+  - id: mypy
+    additional_dependencies:
+    - types-docutils
+    - types-requests
+    - typing-extensions
+
+- repo: https://github.com/pre-commit/pre-commit
+  rev: v3.2.2
+  hooks:
+  - id: validate_manifest
