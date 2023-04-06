@@ -1,6 +1,7 @@
 use numpy::ndarray::Array3;
 use numpy::{IntoPyArray, PyArray3};
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 use resvg::tiny_skia::Pixmap;
 use usvg::{Size, Tree, TreeParsing};
 
@@ -151,11 +152,14 @@ impl RenderedImage {
         .into_pyarray(py))
     }
 
-    /// TODO(edgarrmondragon): Check if this is can be used instead of as_array.
-    fn as_png(&self) -> PyResult<Vec<u8>> {
-        self.pixmap.encode_png().map_err(|e| {
-            pyo3::exceptions::PyException::new_err(format!("Failed to encode PNG: {}", e))
-        })
+    /// Returns the rendered image as bytes in PNG format.
+    fn as_png(&self, py: Python) -> PyResult<PyObject> {
+        self.pixmap
+            .encode_png()
+            .map(|b| PyBytes::new(py, &b).into())
+            .map_err(|e| {
+                pyo3::exceptions::PyException::new_err(format!("Failed to encode PNG: {}", e))
+            })
     }
 }
 

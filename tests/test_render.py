@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import io
 import typing as t
 from pathlib import Path
 
 import pytest
-from PIL import Image
 
 import resvg_py
 
@@ -27,9 +25,4 @@ def test_render(snapshot: Snapshot, svg_file: str) -> None:
 
     with Path(svg_file).open("r") as input_file:
         rendered = r.render(input_file.read(), 400, 400)
-        array = rendered.as_array()
-
-        with io.BytesIO() as png_file:
-            im = Image.fromarray(array)
-            im.save(png_file, format="PNG")
-            snapshot.assert_match(png_file.getvalue(), "output.png")
+        snapshot.assert_match(rendered.as_png(), "output.png")
