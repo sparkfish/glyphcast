@@ -5,6 +5,8 @@ use resvg::tiny_skia::Pixmap;
 use usvg::{Size, Tree, TreeParsing};
 
 /// SVG parsing and rendering options.
+///
+/// TODO(edgarmondragon): Add more options.
 #[derive(Clone)]
 #[pyclass]
 pub struct SVGOptions {
@@ -149,6 +151,7 @@ impl RenderedImage {
         .into_pyarray(py))
     }
 
+    /// TODO(edgarrmondragon): Check if this is can be used instead of as_array.
     fn as_png(&self) -> PyResult<Vec<u8>> {
         self.pixmap.encode_png().map_err(|e| {
             pyo3::exceptions::PyException::new_err(format!("Failed to encode PNG: {}", e))
