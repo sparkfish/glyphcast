@@ -1,0 +1,25 @@
+name: Test tap-pipedream
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: "1"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3.3.0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4.5.0
+      with:
+        python-version: "3.11"
+
+    - uses: pre-commit/action@v3.0.0
+
+    - uses: pre-commit-ci/lite-action@v1.0.1
+      if: always()
