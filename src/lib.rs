@@ -2,17 +2,70 @@ use numpy::ndarray::Array3;
 use numpy::{IntoPyArray, PyArray3};
 use pyo3::prelude::*;
 use resvg::tiny_skia::Pixmap;
-use usvg::{Tree, TreeParsing};
+use usvg::{Size, Tree, TreeParsing};
+
+/// SVG parsing and rendering options.
+#[derive(Clone)]
+#[pyclass]
+pub struct SVGOptions {
+    /// Target DPI.
+    ///
+    /// Impacts units conversion.
+    ///
+    /// Default: 96.0
+    dpi: f64,
+
+    /// Directory that will be used during relative paths resolving.
+    ///
+    /// Expected to be the same as the directory that contains the SVG file,
+    /// but can be set to any.
+    ///
+    /// Default: `None
+    resources_dir: Option<std::path::PathBuf>,
+
+    /// Default viewport width to assume if there is no `viewBox` attribute and
+    /// the `width` is relative.
+    ///
+    /// Default: 100.0
+    default_width: f64,
+
+    /// Default viewport height to assume if there is no `viewBox` attribute and
+    /// the `height` is relative.
+    ///
+    /// Default: 100.0
+    default_height: f64,
+}
+
+#[pymethods]
+impl SVGOptions {
+    #[new]
+    #[pyo3(signature = (*, dpi = 96.0, default_width = 100.0, default_height = 100.0, resources_dir = None))]
+    fn new(
+        dpi: f64,
+        default_width: f64,
+        default_height: f64,
+        resources_dir: Option<std::path::PathBuf>,
+    ) -> Self {
+        Self {
+            dpi,
+            default_width,
+            default_height,
+            resources_dir,
+        }
+    }
+}
 
 /// A Python class for rendering SVGs.
 #[pyclass]
-pub struct Resvg {}
+pub struct Resvg {
+    options: Option<SVGOptions>,
+}
 
 #[pymethods]
 impl Resvg {
     #[new]
-    fn new() -> Self {
-        Self {}
+    fn new(options: Option<SVGOptions>) -> Self {
+        Self { options }
     }
 
     /// Renders SVG to PNG.
@@ -28,7 +81,19 @@ impl Resvg {
     /// A numpy array of shape (height, width, 4) containing RGBA data.
     fn render(&self, svg: &str, width: u32, height: u32) -> RenderedImage {
         let mut pixmap = Pixmap::new(width, height).unwrap();
-        let tree = Tree::from_str(svg, &usvg::Options::default()).unwrap();
+
+        let options = if let Some(options) = &self.options {
+            usvg::Options {
+                dpi: options.dpi,
+                default_size: Size::new(options.default_width, options.default_height).unwrap(),
+                resources_dir: options.resources_dir.clone(),
+                ..usvg::Options::default()
+            }
+        } else {
+            usvg::Options::default()
+        };
+
+        let tree = Tree::from_str(svg, &options).unwrap();
 
         resvg::render(
             &tree,
@@ -94,6 +159,8 @@ impl RenderedImage {
 /// Python bindings for resvg.
 #[pymodule]
 fn resvg_py(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_class::<SVGOptions>()?;
+    m.add_class::<RenderedImage>()?;
     m.add_class::<Resvg>()?;
     Ok(())
 }
