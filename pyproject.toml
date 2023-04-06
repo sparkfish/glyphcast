@@ -16,6 +16,9 @@ dependencies = [
     "Pillow",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest", "pytest-snapshot"]
+
 [tool.maturin]
 python-source = "python"
 features = ["pyo3/extension-module"]
@@ -25,7 +28,8 @@ select = ["ALL"]
 target-version = "py37"
 
 [tool.ruff.isort]
-known-first-party = ["resvg"]
+known-first-party = ["resvg_py"]
 
 [tool.ruff.per-file-ignores]
 "**/*.pyi" = ["D1"]
+"tests/test_*.py" = ["D1"]
