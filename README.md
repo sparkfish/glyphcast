@@ -1,6 +1,6 @@
 # resvg-py
 
-`resvg-py` provides a Python interface to the (`resvg` library)[https://github.com/RazrFalcon/resvg/], an open-source Rust-based SVG rendering library that can be used to convert SVG images to various other formats such as PNG, PDF, and SVGZ.
+`resvg-py` provides a Python interface to the [`resvg`](https://github.com/RazrFalcon/resvg/) library, an open-source Rust-based SVG rendering library that can be used to convert SVG images to various other formats such as PNG, PDF, and SVGZ.
 
 The purpose of `resvg-py` is to provide a convenient way to use `resvg` from within Python code, without the need for external dependencies.  By using `resvg-py`, developers can incorporate SVG rendering functionality directly into their Python applications, making it easier to work with SVG images and to create high-quality, scalable graphics for their projects.
 
