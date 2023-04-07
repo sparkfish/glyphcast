@@ -8,7 +8,6 @@ With `resvg-py`, developers can:
 
 * Load SVG files and render them to various output formats
 * Control the output size, resolution, and quality of the rendered images
-* Modify SVG documents programmatically before rendering
 * Work with SVG images directly within their Python code, without the need for external tools or libraries
 
 Overall, `resvg-py` provides a simple and powerful way to work with SVG images in Python, and can be a useful tool for developers who need to work with vector graphics in their projects.
