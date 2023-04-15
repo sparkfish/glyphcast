@@ -1,60 +1,11 @@
+mod options;
+
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use resvg::tiny_skia::Pixmap;
 use usvg::{Size, Tree, TreeParsing};
 
-/// SVG parsing and rendering options.
-///
-/// TODO(edgarmondragon): Add more options.
-#[derive(Clone)]
-#[pyclass]
-pub struct SVGOptions {
-    /// Target DPI.
-    ///
-    /// Impacts units conversion.
-    ///
-    /// Default: 96.0
-    dpi: f64,
-
-    /// Directory that will be used during relative paths resolving.
-    ///
-    /// Expected to be the same as the directory that contains the SVG file,
-    /// but can be set to any.
-    ///
-    /// Default: `None
-    resources_dir: Option<std::path::PathBuf>,
-
-    /// Default viewport width to assume if there is no `viewBox` attribute and
-    /// the `width` is relative.
-    ///
-    /// Default: 100.0
-    default_width: f64,
-
-    /// Default viewport height to assume if there is no `viewBox` attribute and
-    /// the `height` is relative.
-    ///
-    /// Default: 100.0
-    default_height: f64,
-}
-
-#[pymethods]
-impl SVGOptions {
-    #[new]
-    #[pyo3(signature = (*, dpi = 96.0, default_width = 100.0, default_height = 100.0, resources_dir = None))]
-    fn new(
-        dpi: f64,
-        default_width: f64,
-        default_height: f64,
-        resources_dir: Option<std::path::PathBuf>,
-    ) -> Self {
-        Self {
-            dpi,
-            default_width,
-            default_height,
-            resources_dir,
-        }
-    }
-}
+use crate::options::{SVGOptions, ShapeRendering};
 
 /// A Python class for rendering SVGs.
 #[pyclass]
@@ -86,9 +37,15 @@ impl Resvg {
         let options = if let Some(options) = &self.options {
             usvg::Options {
                 dpi: options.dpi,
-                default_size: Size::new(options.default_width, options.default_height).unwrap(),
+                font_family: options.font_family.clone(),
+                font_size: options.font_size,
+                languages: options.languages.clone().unwrap_or_default(),
+                shape_rendering: options.shape_rendering.clone().into(),
+                text_rendering: options.text_rendering.clone().into(),
+                image_rendering: options.image_rendering.clone().into(),
                 resources_dir: options.resources_dir.clone(),
-                ..usvg::Options::default()
+                default_size: Size::new(options.default_width, options.default_height).unwrap(),
+                image_href_resolver: usvg::ImageHrefResolver::default(),
             }
         } else {
             usvg::Options::default()
@@ -140,6 +97,7 @@ impl RenderedImage {
 /// Python bindings for resvg.
 #[pymodule]
 fn resvg_py(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_class::<ShapeRendering>()?;
     m.add_class::<SVGOptions>()?;
     m.add_class::<RenderedImage>()?;
     m.add_class::<Resvg>()?;
