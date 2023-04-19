@@ -4,14 +4,23 @@ import os
 
 from numpy import ndarray
 
+class ShapeRendering:
+    OptimizeSpeed: ShapeRendering
+    CrispEdges: ShapeRendering
+    GeometricPrecision: ShapeRendering
+
 class SVGOptions:
     def __init__(
         self: SVGOptions,
         *,
         dpi: float = 96.0,
+        font_family: str = "Times New Roman",
+        font_size: float = 12.0,
+        languages: list[str] | None = None,
+        shape_rendering: ShapeRendering,
+        resources_dir: os.PathLike | None = None,
         default_width: float = 100.0,
         default_height: float = 100.0,
-        resources_dir: os.PathLike | None = None,
     ) -> None: ...
 
 class Resvg:

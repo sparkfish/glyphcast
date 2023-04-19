@@ -14,13 +14,22 @@ if t.TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "svg_file",
+    ("svg_file", "options"),
     [
-        pytest.param("resources/examples/svg/octocat.svg", id="octocat"),
+        pytest.param(
+            "resources/examples/svg/octocat.svg",
+            resvg_py.SVGOptions(
+                shape_rendering=resvg_py.ShapeRendering.GeometricPrecision,
+            ),
+            id="octocat",
+        ),
     ],
 )
-def test_render(snapshot: Snapshot, svg_file: str) -> None:
-    options = resvg_py.SVGOptions()
+def test_render(
+    snapshot: Snapshot,
+    svg_file: str,
+    options: resvg_py.SVGOptions,
+) -> None:
     r = resvg_py.Resvg(options)
 
     with Path(svg_file).open("r") as input_file:
